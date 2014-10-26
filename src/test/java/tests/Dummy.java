@@ -3,7 +3,6 @@ package tests;
 import org.junit.Test;
 import org.zoltor.common.Config;
 import org.zoltor.model.User;
-import org.zoltor.model.entities.UserEntity;
 
 import java.sql.SQLException;
 import java.text.ParseException;

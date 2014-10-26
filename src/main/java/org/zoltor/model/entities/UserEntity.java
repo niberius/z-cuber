@@ -64,7 +64,7 @@ public class UserEntity {
         return registered;
     }
 
-    public void setRegistered(Date registered) {
-        this.registered = registered;
+    public void setRegistered(String registered) {
+        this.registered = HelperUtils.getDateFromDb(registered);
     }
 }

@@ -5,15 +5,11 @@ import org.zoltor.model.entities.UserEntity;
 import org.zoltor.model.queries.IUserQueries;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
-import static org.zoltor.common.Config.*;
+import static org.zoltor.common.Config.db;
 
 /**
  * Created by zoltor on 22.10.14.
@@ -76,7 +72,7 @@ public class User implements IUserQueries {
             userInfo.setNick(result.get(0).get("nick"));
             userInfo.setEmail(result.get(0).get("email"));
             userInfo.setEncryptedPassword(result.get(0).get("password"));
-            userInfo.setRegistered(HelperUtils.getDateFromDb(result.get(0).get("registered_datetime")));
+            userInfo.setRegistered(result.get(0).get("registered_datetime"));
             return userInfo;
         } else {
             return null;

@@ -4,7 +4,6 @@ import org.zoltor.common.HelperUtils;
 import org.zoltor.model.queries.IRoomQueries;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import static org.zoltor.common.Config.db;
