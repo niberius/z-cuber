@@ -30,7 +30,7 @@ public class DataBase {
      * @param args Arguments to scripts
      * @return
      */
-    public List<Map<String, String>> get(String sqlScript, Object... args) {
+    public List<Map<String, String>> get(String sqlScript, Object... args) throws SQLException {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>();
         ResultSet queryResult = (ResultSet)doPreparedStatement(sqlScript, true, args);
         if (queryResult != null) {
@@ -60,7 +60,7 @@ public class DataBase {
      *         -1 - error at script execution
      *         other int - number of affected rows
      */
-    public int update(String sqlScript, Object... args) {
+    public int update(String sqlScript, Object... args) throws SQLException {
         return (Integer) doPreparedStatement(sqlScript, false, args);
     }
 
@@ -97,33 +97,28 @@ public class DataBase {
      *         other int - number of affected rows
      * Return result should be casted to ResultSet type or to Integer
      */
-    private Object doPreparedStatement(final String sqlScript, boolean isSelect, Object... args) {
+    private Object doPreparedStatement(final String sqlScript, boolean isSelect, Object... args) throws SQLException{
         ResultSet resultSelect = null;
         Integer resultUpdate = -1;
         reconnect();
-        try {
-            PreparedStatement statement = connection.prepareStatement(sqlScript);
-            int currIdx = 1;
-            for (Object oneObj : args) {
-                if (oneObj instanceof Integer) {
-                    statement.setInt(currIdx, (Integer)oneObj);
-                } else if (oneObj instanceof Boolean) {
-                    statement.setInt(currIdx, ((Boolean)oneObj) ? 1 : 0);
-                } else if (oneObj == null) {
-                    statement.setNull(currIdx, Types.NULL);
-                } else {
-                    statement.setString(currIdx, (String) oneObj);
-                }
-                currIdx++;
-            }
-            if (isSelect) {
-                resultSelect = statement.executeQuery();
+        PreparedStatement statement = connection.prepareStatement(sqlScript);
+        int currIdx = 1;
+        for (Object oneObj : args) {
+            if (oneObj instanceof Integer) {
+                statement.setInt(currIdx, (Integer)oneObj);
+            } else if (oneObj instanceof Boolean) {
+                statement.setInt(currIdx, ((Boolean)oneObj) ? 1 : 0);
+            } else if (oneObj == null) {
+                statement.setNull(currIdx, Types.NULL);
             } else {
-                resultUpdate = statement.executeUpdate();
+                statement.setString(currIdx, (String) oneObj);
             }
-        } catch (SQLException e) {
-            logger.error("Error when executing query: " + sqlScript);
-            e.printStackTrace();
+            currIdx++;
+        }
+        if (isSelect) {
+            resultSelect = statement.executeQuery();
+        } else {
+            resultUpdate = statement.executeUpdate();
         }
         return (resultSelect != null) ? resultSelect : resultUpdate;
     }
