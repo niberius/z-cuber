@@ -27,7 +27,7 @@ public class User implements IUserQueries {
     }
 
     /**
-     * Is user autorized to get access to game
+     * Is user authorized to get access to game
      * @param nick Nickname of existing user
      * @param password Password which appropriate to user with `nick`.
      *                 Password should be encrypted with salt  by md5 algorithm.
@@ -37,7 +37,7 @@ public class User implements IUserQueries {
      * @return True - if user exists and given password is appropriate for given user nick. Otherwise - false.
      * @throws SQLException Wrong parameter given
      */
-    public static boolean isAutorized(String nick, String password) throws SQLException {
+    public static boolean isAuthorized(String nick, String password) throws SQLException {
         List<Map<String, String>> userInfo = db.get(SELECT_USER_BY_NICK, nick);
         return userInfo.size() >= 1 && userInfo.get(0).get("password").equals(password);
     }
