@@ -15,8 +15,8 @@ public interface IUserQueries {
 
     String SELECT_GET_GAME_ID_FOR_USER =
             "SELECT r.id FROM rooms r\n" +
-            "JOIN rel_users_rooms rur ON rur.room_id = r.id\n" +
-            "WHERE r.is_active = 1 AND ? = (r.host_id OR rur.user_id);";
+            "LEFT JOIN rel_users_rooms rur ON rur.room_id = r.id\n" +
+            "WHERE r.is_active = 1 AND (r.host_id = ? OR rur.user_id = ?)";
 
     // INSERT queries
 

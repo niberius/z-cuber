@@ -87,7 +87,7 @@ public class User implements IUserQueries {
      */
     public static long getRoomIdForUser(String nick) throws SQLException {
         UserEntity userInfo = getUserInfo(nick);
-        List<Map <String, String>> result = db.get(SELECT_GET_GAME_ID_FOR_USER, userInfo.getId());
+        List<Map <String, String>> result = db.get(SELECT_GET_GAME_ID_FOR_USER, userInfo.getId(), userInfo.getId());
         if (result.size() > 0) {
             return Long.valueOf(result.get(0).get("id"));
         } else {

@@ -60,4 +60,10 @@ public class Dummy {
         assertEquals("Wrong room state", true, room.isActive());
     }
 
+    @Test
+    public void a4_gameForUser() throws SQLException {
+        Long roomId = User.getRoomIdForUser("test");
+        assertEquals("No game for user 'test' or rom id worg: " + String.valueOf(roomId), true, roomId > -1);
+    }
+
 }
