@@ -1,9 +1,12 @@
 package tests;
 
 import org.junit.Test;
+import org.zoltor.common.Config;
 import org.zoltor.model.User;
+import org.zoltor.model.entities.UserEntity;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 
 /**
  * Created by zoltor on 23.10.14.
@@ -11,17 +14,8 @@ import java.sql.SQLException;
 public class Dummy {
 
     @Test
-    public void dbTest() {
-        try {
-            //user.registerUser("zoltor", "pass", "zoltor@local.host");
-            System.out.println(User.isAuthorized("zoltor", "����E<,�*v�\b#��� "));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void md5DigestTest() {
-        //System.out.println(HelperUtils.getMd5Digest("zoltor", "pass", "zoltor@local.host"));
+    public void dbTest() throws SQLException, ParseException {
+        User.getUserInfo("zoltor1");
+        Config.logger.info("hi");
     }
 }

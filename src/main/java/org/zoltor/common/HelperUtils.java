@@ -3,6 +3,9 @@ package org.zoltor.common;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.zoltor.common.Config.logger;
 
@@ -44,5 +47,14 @@ public class HelperUtils {
      */
     public static String getMd5Digest(String... strings) {
         return getMd5Digest(Config.dataEncoding, strings);
+    }
+
+    public static Date getDateFromDb(String sqlDateField) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(sqlDateField);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new Date();
+        }
     }
 }
