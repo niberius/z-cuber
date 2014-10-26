@@ -62,6 +62,7 @@ public class Dummy {
 
     @Test
     public void a4_gameForUser() throws SQLException {
+        // TODO Also need some tests for joined users
         Long roomId = User.getRoomIdForUser("test");
         assertEquals("No game for user 'test' or rom id worg: " + String.valueOf(roomId), true, roomId > -1);
     }
