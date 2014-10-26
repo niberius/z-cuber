@@ -50,10 +50,8 @@ public class UserEntity {
     public String getEncryptedPassword() {
         if (encryptedPassword == null) {
             this.encryptedPassword = HelperUtils.getMd5Digest(nick, password, email);
-            return encryptedPassword;
-        } else {
-            return encryptedPassword;
         }
+        return encryptedPassword;
     }
 
     public void setEncryptedPassword(String encryptedPassword) {

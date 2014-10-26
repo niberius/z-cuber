@@ -64,7 +64,7 @@ public class User implements IUserQueries {
      * @return Map<String, String> with user info (keys of map ar: id, nick, password, email, registered_datetime)
      * @throws SQLException When nick contains illegal characters or it empty / null
      */
-    public static UserEntity getUserInfo(String nick) throws SQLException, ParseException {
+    public static UserEntity getUserInfo(String nick) throws SQLException {
         List<Map<String, String>> result = db.get(SELECT_USER_BY_NICK, nick);
         if (result.size() > 0) {
             UserEntity userInfo = new UserEntity();

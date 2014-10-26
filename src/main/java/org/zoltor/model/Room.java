@@ -1,9 +1,11 @@
 package org.zoltor.model;
 
-import org.zoltor.common.HelperUtils;
+import org.zoltor.model.entities.RoomEntity;
+import org.zoltor.model.entities.UserEntity;
 import org.zoltor.model.queries.IRoomQueries;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import static org.zoltor.common.Config.db;
@@ -15,36 +17,49 @@ public class Room implements IRoomQueries {
 
     /**
      * Begin new game
-     * @param userNick nick of user host
-     * @param roomName name for room
-     * @param password password for room (if not empty - room will be private with password access to it)
+     * @param roomInfo RoomEntity with information about room
      * @throws SQLException Some errors in args
      */
-    public void startNewGame(String userNick, String roomName, String password) throws SQLException {
-        boolean isPrivate = password.isEmpty();
-        password = (password.isEmpty()) ? "" : HelperUtils.getMd5Digest(password);
-        db.update(INSERT_START_NEW_GAME_BY_USER_NICK, userNick, roomName, password, isPrivate);
+    public void startNewGame(RoomEntity roomInfo) throws SQLException {
+        db.update(INSERT_START_NEW_GAME_BY_USER_NICK, roomInfo.getHostUser().getId(), roomInfo.getName(), roomInfo.getEncryptedPassword(), roomInfo.isPrivate());
     }
 
     /**
-     * Join to game
-     * @param userNick User nick which should be joined to game
-     * @param roomId Id of room to join
+     * Join user to room
+     * @param user User described in UserEntity which should be joined to game
+     * @param room Room described in RoomEntity
      * @throws SQLException Some errors in args
      */
-    public void joinGame(String userNick, int roomId) throws SQLException {
-        db.update(INSERT_JOIN_GAMY_BY_NICK, userNick, roomId);
+    public void joinGame(UserEntity user, RoomEntity room) throws SQLException {
+        db.update(INSERT_JOIN_GAME_BY_NICK, user.getId(), room.getId());
     }
 
     /**
      * Get information about active room (game NOT closed)
      * @param roomId Id of room
-     * @return Map<String,String> with values of room. Keys of map:
-     *         id - roomId, host_id - id of host user, host_nick - nickname of host user,
+     * @return RoomEntity with information about room, host user and joined users
      * @throws SQLException
      */
-    public Map<String, String> getRoomInfo(int roomId) throws SQLException {
-        return db.get(SELECT_ROOM_INFO, roomId).get(0);
+    public RoomEntity getRoomInfo(long roomId) throws SQLException {
+        RoomEntity roomInfo = new RoomEntity();
+        List<Map<String, String>> rooms = db.get(SELECT_ROOM_INFO, roomId);
+        boolean isMainInfoFetched = false;
+        for (Map<String, String> room : rooms) {
+            if (!isMainInfoFetched) {
+                isMainInfoFetched = true;
+                UserEntity host = User.getUserInfo(room.get("host_nick"));
+                roomInfo.setHostUser(host);
+                roomInfo.setId(Long.valueOf(room.get("id")));
+                roomInfo.setName(room.get("name"));
+                roomInfo.setEncryptedPassword(room.get("password"));
+                roomInfo.setPrivate(room.get("is_private").equals("1"));
+                roomInfo.setActive(room.get("is_active").equals("1"));
+                roomInfo.setCreated(room.get("created_datetime"));
+            }
+            UserEntity joinedUser = User.getUserInfo(room.get("user_nick"));
+            roomInfo.getJoinedUsers().add(joinedUser);
+        }
+        return roomInfo;
     }
 
 }
