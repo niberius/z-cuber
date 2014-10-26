@@ -113,6 +113,8 @@ public class DataBase {
                 statement.setInt(currIdx, ((Boolean)oneObj) ? 1 : 0);
             } else if (oneObj == null) {
                 statement.setNull(currIdx, Types.NULL);
+            } else if (oneObj instanceof Long) {
+                statement.setLong(currIdx, (Long)oneObj);
             } else {
                 statement.setString(currIdx, (String) oneObj);
             }

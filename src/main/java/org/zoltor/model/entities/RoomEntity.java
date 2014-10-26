@@ -53,7 +53,7 @@ public class RoomEntity {
     }
 
     public String getEncryptedPassword() {
-        if (encryptedPassword == null) {
+        if (encryptedPassword == null && password != null) {
             encryptedPassword = HelperUtils.getMd5Digest(password);
         }
         return encryptedPassword;
@@ -76,7 +76,11 @@ public class RoomEntity {
     }
 
     public void setPrivate(boolean isPrivate) {
-        this.isPrivate = isPrivate;
+        if (password == null && encryptedPassword == null) {
+            this.isPrivate = false;
+        } else {
+            this.isPrivate = isPrivate;
+        }
     }
 
     public boolean isActive() {

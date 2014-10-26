@@ -26,16 +26,18 @@ public class HelperUtils {
         for (String string : strings) {
             sb.append(string);
         }
-        try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            byte[] md5Digest = digest.digest(sb.toString().getBytes());
-            result = new String(md5Digest, encoding.getEncodingName());
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("Decode algorithm not found");
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Wrong encoding");
-            e.printStackTrace();
+        if (sb.length() > 0) {
+            try {
+                MessageDigest digest = MessageDigest.getInstance("MD5");
+                byte[] md5Digest = digest.digest(sb.toString().getBytes());
+                result = new String(md5Digest, encoding.getEncodingName());
+            } catch (NoSuchAlgorithmException e) {
+                logger.error("Decode algorithm not found");
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                logger.error("Wrong encoding");
+                e.printStackTrace();
+            }
         }
         return result;
     }

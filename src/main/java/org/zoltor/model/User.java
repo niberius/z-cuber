@@ -79,4 +79,20 @@ public class User implements IUserQueries {
         }
     }
 
+    /**
+     * Get room for autojoin user after page refresh
+     * @param nick Nick uf user
+     * @return -1 if no active room exists or room_id of active room where user is joined
+     * @throws SQLException Nick contains wrong symbols or it's null
+     */
+    public static long getRoomIdForUser(String nick) throws SQLException {
+        UserEntity userInfo = getUserInfo(nick);
+        List<Map <String, String>> result = db.get(SELECT_GET_GAME_ID_FOR_USER, userInfo.getId());
+        if (result.size() > 0) {
+            return Long.valueOf(result.get(0).get("id"));
+        } else {
+            return -1;
+        }
+    }
+
 }

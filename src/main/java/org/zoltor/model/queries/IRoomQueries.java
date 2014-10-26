@@ -15,11 +15,14 @@ public interface IRoomQueries {
             "GROUP BY rur.room_id";
 
     String SELECT_ROOM_INFO =
-            "SELECT r.id, r.host_id, h.nick host_nick, u.nick user_nick FROM rooms r\n" +
-            "JOIN rel_users_rooms rur ON rur.room_id = r.id\n" +
-            "JOIN users u ON rur.user_id = u.id\n" +
+            "SELECT r.id, r.name, r.host_id, h.nick host_nick, r.is_active, r.is_private, r.created_datetime, u.nick user_nick FROM rooms r\n" +
             "JOIN users h ON h.id = r.host_id\n" +
+            "LEFT JOIN rel_users_rooms rur ON rur.room_id = r.id\n" +
+            "LEFT JOIN users u ON rur.user_id = u.id\n" +
             "WHERE r.id = ?";
+
+    String SELECT_GET_ACTIVE_ROOM_ID_BY_NAME =
+            "SELECT id FROM rooms WHERE name = ? AND is_active = 1";
 
     // INSERT queries
 

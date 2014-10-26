@@ -20,7 +20,7 @@ public class Room implements IRoomQueries {
      * @param roomInfo RoomEntity with information about room
      * @throws SQLException Some errors in args
      */
-    public void startNewGame(RoomEntity roomInfo) throws SQLException {
+    public static void startNewGame(RoomEntity roomInfo) throws SQLException {
         db.update(INSERT_START_NEW_GAME_BY_USER_NICK, roomInfo.getHostUser().getId(), roomInfo.getName(), roomInfo.getEncryptedPassword(), roomInfo.isPrivate());
     }
 
@@ -30,7 +30,7 @@ public class Room implements IRoomQueries {
      * @param room Room described in RoomEntity
      * @throws SQLException Some errors in args
      */
-    public void joinGame(UserEntity user, RoomEntity room) throws SQLException {
+    public static void joinGame(UserEntity user, RoomEntity room) throws SQLException {
         db.update(INSERT_JOIN_GAME_BY_NICK, user.getId(), room.getId());
     }
 
@@ -40,7 +40,7 @@ public class Room implements IRoomQueries {
      * @return RoomEntity with information about room, host user and joined users
      * @throws SQLException
      */
-    public RoomEntity getRoomInfo(long roomId) throws SQLException {
+    public static RoomEntity getRoomInfo(long roomId) throws SQLException {
         RoomEntity roomInfo = new RoomEntity();
         List<Map<String, String>> rooms = db.get(SELECT_ROOM_INFO, roomId);
         boolean isMainInfoFetched = false;
@@ -62,4 +62,13 @@ public class Room implements IRoomQueries {
         return roomInfo;
     }
 
+    public static long getActiveRoomIdByName(String roomName) throws SQLException {
+        String roomIdAsString = "";
+        try {
+            roomIdAsString = db.get(SELECT_GET_ACTIVE_ROOM_ID_BY_NAME, roomName).get(0).get("id");
+        } catch (Throwable e) {
+            // :(
+        }
+        return (roomIdAsString.isEmpty()) ? -1 : Long.valueOf(roomIdAsString);
+    }
 }
