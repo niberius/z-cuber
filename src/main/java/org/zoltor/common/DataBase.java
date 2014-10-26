@@ -40,7 +40,7 @@ public class DataBase {
                 while (queryResult.next()){
                     Map<String, String> tmpMap = new HashMap<String, String>();
                     for (int i = 1; i <= colsCount; i++) {
-                        tmpMap.put(meta.getCatalogName(i), queryResult.getString(i));
+                        tmpMap.put(meta.getColumnName(i), queryResult.getString(i));
                     }
                     result.add(tmpMap);
                 }
