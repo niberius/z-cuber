@@ -5,7 +5,6 @@ import org.zoltor.model.entities.UserEntity;
 import org.zoltor.model.queries.IUserQueries;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -81,7 +80,7 @@ public class User implements IUserQueries {
 
     /**
      * Get room for autojoin user after page refresh
-     * @param nick Nick uf user
+     * @param nick Nick of user
      * @return -1 if no active room exists or room_id of active room where user is joined
      * @throws SQLException Nick contains wrong symbols or it's null
      */
