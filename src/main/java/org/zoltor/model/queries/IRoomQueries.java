@@ -12,7 +12,10 @@ public interface IRoomQueries {
             "JOIN users u ON r.host_id = u.id\n" +
             "JOIN rel_users_rooms rur ON rur.room_id = r.id\n" +
             "WHERE r.is_active = 1\n" +
-            "GROUP BY rur.room_id";
+            "GROUP BY rur.room_id"; // TODO Remove?
+
+    String SELECT_ACTIVE_ROOMS_IDS =
+            "SELECT id FROM rooms WHERE is_active = 1";
 
     String SELECT_ROOM_INFO =
             "SELECT r.id, r.name, r.host_id, h.nick host_nick, r.is_active, r.is_private, r.created_datetime, u.nick user_nick FROM rooms r\n" +
@@ -36,4 +39,12 @@ public interface IRoomQueries {
 
     String UPDATE_CLOSE_GAME =
             "UPDATE rooms SET is_active = 0 WHERE id = ?";
+
+    // DELETE queries
+
+    String DELETE_LEAVE_GAME =
+            "DELETE FROM rel_users_rooms WHERE room_id = ? AND user_id = ?";
+
+    String DELETE_ALL_ON_HOST_LEAVE =
+            "DELETE FROM rel_users_rooms WHERE room_id = ?";
 }

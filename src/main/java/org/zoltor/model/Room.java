@@ -5,6 +5,7 @@ import org.zoltor.model.entities.UserEntity;
 import org.zoltor.model.queries.IRoomQueries;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,12 +57,19 @@ public class Room implements IRoomQueries {
                 roomInfo.setActive(room.get("is_active").equals("1"));
                 roomInfo.setCreated(room.get("created_datetime"));
             }
+            // TODO Refactor : get all info from joined cols
             UserEntity joinedUser = User.getUserInfo(room.get("user_nick"));
             roomInfo.getJoinedUsers().add(joinedUser);
         }
         return roomInfo;
     }
 
+    /**
+     * Get id of active (not closed) room by it name
+     * @param roomName Room name
+     * @return -1 if room not found. Otherwise - id of room
+     * @throws SQLException Something going wrong
+     */
     public static long getActiveRoomIdByName(String roomName) throws SQLException {
         String roomIdAsString = "";
         try {
@@ -70,5 +78,34 @@ public class Room implements IRoomQueries {
             // :(
         }
         return (roomIdAsString.isEmpty()) ? -1 : Long.valueOf(roomIdAsString);
+    }
+
+    /**
+     * Get active rooms list
+     * @return List with active rooms info
+     * @throws SQLException
+     */
+    public static List<RoomEntity> getActiveRoomsList() throws SQLException {
+        List<RoomEntity> result = new ArrayList<RoomEntity>();
+        List<Map<String, String>> roomsIds = db.get(SELECT_ACTIVE_ROOMS_IDS);
+        for (Map<String, String> roomId : roomsIds) {
+            result.add(getRoomInfo(Long.valueOf(roomId.get("id"))));
+        }
+        return result;
+    }
+
+    /**
+     * Leave room by user. If user is game hoster - all other users will be leave
+     * @param user UserEntity with info of user which leaving
+     * @param room RoomEntity with room nfo which user leaved
+     * @throws SQLException
+     */
+    public static void leaveRoom(UserEntity user, RoomEntity room) throws SQLException {
+        if (room.getHostUser().getId() == user.getId()) {
+            db.update(DELETE_ALL_ON_HOST_LEAVE, room.getId());
+            db.update(UPDATE_CLOSE_GAME, room.getId());
+        } else {
+            db.update(DELETE_LEAVE_GAME, room.getId(), user.getId());
+        }
     }
 }
