@@ -35,6 +35,9 @@ public interface IRoomQueries {
     String INSERT_JOIN_GAME_BY_NICK =
             "INSERT INTO rel_users_rooms (user_id, room_id) VALUES (?, ?)";
 
+    String INSERT_FORMULA =
+            "INSERT INTO formulas (formula) VALUES (?)";
+
     // UPDATE queries
 
     String UPDATE_CLOSE_GAME =

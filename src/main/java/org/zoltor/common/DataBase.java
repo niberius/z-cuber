@@ -59,12 +59,11 @@ public class DataBase {
      * Prepare INSERT / DELETE / UPDATE statement and execute it
      * @param sqlScript Sql script for prepared statements
      * @param args Arguments to scripts
-     * @return 0 - no affected rows
-     *         -1 - error at script execution
-     *         other int - number of affected rows
+     * @return -1 - error at script execution
+     *         other Long - number of generated id of inserted row
      */
-    public int update(String sqlScript, Object... args) throws SQLException {
-        return (Integer) doPreparedStatement(sqlScript, false, args);
+    public Long update(String sqlScript, Object... args) throws SQLException {
+        return (Long) doPreparedStatement(sqlScript, false, args);
     }
 
     ////////////////////
@@ -95,14 +94,13 @@ public class DataBase {
      * @param isSelect Type of sqlScript: True - if it SELECT ..., False - if INSERT ..., DELETE ..., UPDATE ...
      * @param args Arguments to scripts
      * @return ResultSet with select results or code of INSERT / DELETE / UPDATE query:
-     *         0 - no affected rows
      *         -1 - error at script execution
-     *         other int - number of affected rows
-     * Return result should be casted to ResultSet type or to Integer
+     *         other Long - number of generated id of inserted row
+     * Return result should be casted to ResultSet type or to Long
      */
     private Object doPreparedStatement(final String sqlScript, boolean isSelect, Object... args) throws SQLException{
         ResultSet resultSelect = null;
-        Integer resultUpdate = -1;
+        Long resultUpdate = -1L;
         reconnect();
         PreparedStatement statement = connection.prepareStatement(sqlScript);
         int currIdx = 1;
@@ -123,7 +121,10 @@ public class DataBase {
         if (isSelect) {
             resultSelect = statement.executeQuery();
         } else {
-            resultUpdate = statement.executeUpdate();
+            statement.executeUpdate();
+            ResultSet tmpUpdInfo = statement.getGeneratedKeys();
+            tmpUpdInfo.next();
+            resultUpdate = tmpUpdInfo.getLong(1);
         }
         return (resultSelect != null) ? resultSelect : resultUpdate;
     }

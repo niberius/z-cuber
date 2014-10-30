@@ -1,5 +1,6 @@
 package org.zoltor.model;
 
+import org.zoltor.model.entities.FormulaEntity;
 import org.zoltor.model.entities.RoomEntity;
 import org.zoltor.model.entities.UserEntity;
 import org.zoltor.model.queries.IRoomQueries;
@@ -8,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static org.zoltor.common.Config.db;
 
@@ -107,5 +109,28 @@ public class Room implements IRoomQueries {
         } else {
             db.update(DELETE_LEAVE_GAME, room.getId(), user.getId());
         }
+    }
+
+    public static FormulaEntity getFormula(RoomEntity inRoom) throws SQLException {
+        return getFormula(inRoom, 25);
+    }
+
+    public static FormulaEntity getFormula(RoomEntity inRoom, int actions) throws SQLException {
+        StringBuilder result = new StringBuilder();
+        FormulaEntity formulaEntity = new FormulaEntity();
+        String[] sides = {"F", "B", "D", "U", "L", "R"};
+        int sidesCount = sides.length - 1;
+        Random random = new Random();
+        for (int i = 0; i < actions; i++) {
+            result.append(sides[random.nextInt(sidesCount)])
+                    .append((random.nextInt(1) == 1) ? "'" : "")
+                    .append((random.nextInt(1) == 1) ? "2" : "")
+                    .append(" ");
+        }
+        String formula = result.toString().trim();
+        Long formulaId = db.update(INSERT_FORMULA, formula);
+        formulaEntity.setId(formulaId);
+        formulaEntity.setFormula(formula);
+        return formulaEntity;
     }
 }

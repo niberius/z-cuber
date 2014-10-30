@@ -2,7 +2,9 @@ package org.zoltor.model.entities;
 
 import org.zoltor.common.HelperUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zoltor on 26.10.14.
@@ -14,6 +16,7 @@ public class UserEntity {
     private String encryptedPassword;
     private String email;
     private Date registered;
+    private List<ResultEntity> results = new ArrayList<ResultEntity>();
 
     public long getId() {
         return id;
@@ -64,5 +67,17 @@ public class UserEntity {
 
     public void setRegistered(String registered) {
         this.registered = HelperUtils.getDateFromDb(registered);
+    }
+
+    public void setRegistered(Date registered) {
+        this.registered = registered;
+    }
+
+    public List<ResultEntity> getResults() {
+        return results;
+    }
+
+    public void setResults(List<ResultEntity> results) {
+        this.results = results;
     }
 }

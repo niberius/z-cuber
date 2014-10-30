@@ -1,6 +1,9 @@
 package org.zoltor.model;
 
 import org.zoltor.common.HelperUtils;
+import org.zoltor.model.entities.FormulaEntity;
+import org.zoltor.model.entities.ResultEntity;
+import org.zoltor.model.entities.RoomEntity;
 import org.zoltor.model.entities.UserEntity;
 import org.zoltor.model.queries.IUserQueries;
 
@@ -92,6 +95,64 @@ public class User implements IUserQueries {
         } else {
             return -1;
         }
+    }
+
+    /**
+     * Get user results in specified room
+     * @param forUser User info in UserEntity to refresh result statistics
+     * @param inRoom Room info in RoomEntity to gather statistic
+     * @return UserEntity with refreshed result list
+     * @throws SQLException
+     */
+    public static UserEntity getResult(UserEntity forUser, RoomEntity inRoom) throws SQLException {
+        return processUserResultsFromDb(forUser, db.get(SELECT_RESULTS_FOR_ROOM, forUser.getId(), inRoom.getId()));
+    }
+
+    /**
+     * Get user results for all-time he playing
+     * @param forUser User info in UserEntity to refresh result statistics
+     * @return UserEntity with refreshed result list
+     * @throws SQLException
+     */
+    public static UserEntity getResult(UserEntity forUser) throws SQLException {
+        return processUserResultsFromDb(forUser, db.get(SELECT_RESULTS, forUser.getId()));
+    }
+
+    /**
+     * Post result of game to database
+     * @param forUser User info in UserEntity to post result for
+     * @param inRoom Room info in RoomEntity to post result for
+     * @param result Result info in ResultEntity with Formula info inside
+     * @throws SQLException
+     */
+    public static void setResult(UserEntity forUser, RoomEntity inRoom, ResultEntity result) throws SQLException {
+        db.update(INSERT_POST_USER_RESULT, forUser.getId(), inRoom.getId(), result.getFormula().getId(), result.getResultTime());
+    }
+
+    ////////////////////////
+    // Private methods
+    ////////////////////////
+
+    /**
+     * Get results of user from DB and set it to list of ResultEntity with results info
+     * @param forUser User info in UserEntity to refresh result statistics
+     * @param results List of Map with string key-value pair from DB {@link org.zoltor.common.DataBase#get(String, Object...)}
+     * @return UserEntity with refreshed result list
+     */
+    private static UserEntity processUserResultsFromDb(UserEntity forUser, List<Map <String, String>> results) {
+        forUser.getResults().removeAll(forUser.getResults());
+        for (Map<String, String> result : results) {
+            ResultEntity tmpResult = new ResultEntity();
+            FormulaEntity tmpFormula = new FormulaEntity();
+            tmpFormula.setId(Long.valueOf(result.get("id")));
+            tmpFormula.setFormula(result.get("formula"));
+            tmpResult.setId(Long.valueOf(result.get("id")));
+            tmpResult.setFormula(tmpFormula);
+            tmpResult.setResultRegistered(result.get("result_datetime"));
+            tmpResult.setResultTime(Long.valueOf(result.get("result_time")));
+            forUser.getResults().add(tmpResult);
+        }
+        return forUser;
     }
 
 }
