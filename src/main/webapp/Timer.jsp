@@ -23,6 +23,7 @@ function clearALL() {
 	document.clockform.clock.value=readout;
 	var CF = document.clockform;
 	ii = 0; 
+    init=0;
 	}
 
 function startTIME() {
@@ -64,7 +65,7 @@ function startTIME() {
 	if (dh>0) { if (dh< 10) { dh = '0'+dh; }} else { dh = '00'; }
 	readout = dh + ':' + dm + ':' + ds + '.' + ms;
 	if (show==true) { document.clockform.clock.value = readout; }
-	clocktimer = setTimeout("startTIME()",1); 
+    if(init!=2){clocktimer = setTimeout("startTIME()",1); }    
 	}
 	
 	function findTIME(e) {
@@ -74,13 +75,8 @@ function startTIME() {
 				dateObj = new Date();
 				startTIME();
 				init=1;
-				} else { 
-					if(show==true) {
-						show=false;
-						} else { show=true; 
-				} 
-			} 	
-            }
+				} else { init=2;} 	
+        }
 	}
 	
 	function getTime() {
