@@ -20,8 +20,8 @@ CREATE TABLE rooms (
 );
 
 CREATE TABLE rel_users_rooms (
-    user_id INTEGER,
-    room_id INTEGER,
+    user_id INTEGER NOT NULL,
+    room_id INTEGER NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     FOREIGN KEY(room_id) REFERENCES rooms(id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
