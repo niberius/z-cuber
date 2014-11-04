@@ -13,6 +13,8 @@ var ms=0;
 var show=true;
 var init=0;
 var ii=0;
+var chrono = 15;
+var startTimer=false;
 document.onkeyup = findTIME;
 
 function clearALL() {
@@ -82,14 +84,114 @@ function startTIME() {
 	function getTime() {
 		document.clockform.time.value = document.clockform.clock.value;
 	}
+	
+	function cronometr15sec() {
+    	startTimer=true;    	
+        if(chrono == 0){
+        	chrono=0;
+            return 0;
+        }
+      	chrono = chrono-1;
+        document.clockform.timer.value=chrono.toString();			
+        setTimeout("cronometr15sec()",1000);
+	}
+	
+	function createNewScramble() {
+		var scramble  = "";
+		for(var i = 0; i < 25;i++){
+			var elem = Math.floor(Math.random()*24)
+	    	switch(elem){
+	    		case 0:	
+                	scramble+="F ";
+                    break;
+	    		case 1:
+	    			scramble+="B ";
+	    			break;
+	    		case 2:
+	    			scramble+="L ";
+	    			break;
+	    		case 3:
+	    			scramble+="R ";
+	    			break;
+	    		case 4:
+	    			scramble+="U ";
+	    			break;
+	    		case 5:
+	    			scramble+="D ";
+	    			break;
+	    		case 6:
+	    			scramble+="F' ";
+	    			break;
+	    		case 7:
+	    			scramble+="B' ";
+	    			break;
+	    		case 8:
+	    			scramble+="L' ";
+	    			break;
+	    		case 9:
+	    			scramble+="R' ";
+	    			break;
+	    		case 10:
+	    			scramble+="U' ";
+	    			break;
+	    		case 11:
+	    			scramble+="D' ";
+	    			break;
+	    		case 12:
+	    			scramble+="F2 ";
+	    			break;
+	    		case 13:
+	    			scramble+="B2 ";
+	    			break;
+	    		case 14:
+	    			scramble+="L2 ";
+	    			break;
+	    		case 15:
+	    			scramble+="R2 ";
+	    			break;
+	    		case 16:
+	    			scramble+="U2 ";
+	    			break;
+	    		case 17:
+	    			scramble+="D2 ";
+	    			break;
+	    		case 18:
+	    			scramble+="F2' ";
+	    			break;
+	    		case 19:
+	    			scramble+="B2' ";
+	    			break;
+	    		case 20:
+	    			scramble+="L2' ";
+	    			break;
+	    		case 21:
+	    			scramble+="R2' ";
+	    			break;
+	    		case 22:
+	    			scramble+="U2' ";
+	    			break;
+	    		case 23:
+	    			scramble+="D2' ";
+	    			break;
+	    		default:
+	    			scramble+="";
+	    			break;
+	    	}	    	
+		}
+		document.clockform.newScramble.value = scramble;
+	}
 </script>
 
 </head>
 	<body>
-		<form name=clockform>   
+		<form name=clockform> 
+			<input id=scramble type=button value="New Scramble" onclick="createNewScramble()">
+			<label>Scramble:<input name=newScramble type=text value="" style="font-size:13px;width: 812px; height: 24px; border:1px"></label>
 			<input name=clearer type="button" value="Reset"onclick="clearALL()" style="font-size:15px; width: 85px"> 
 			<input name=clock size=10 value="00:00:00.00" style="font-size:13px; width: 80px; height: 24px; border:1px solid #000000"> 
-			<input name=save type="button" value="Save" onclick="getTime()">	
+			<input name=save type="button" value="Save" onclick="getTime()">
+            <input name=micro type="button" value="Microphone" onclick="cronometr15sec();this.style.display='none';">
+            <input name=timer type=text size=10 value="" style="font-size:13px;"> 
 			<p><label>Time:<input name=time type=text value=""></label></p>
 		</form>
 	</body>
