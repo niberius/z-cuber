@@ -3,49 +3,29 @@ package org.zoltor.controller;
 import org.zoltor.model.User;
 import org.zoltor.model.entities.UserEntity;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by zoltor on 05.11.14.
  */
-public abstract class BaseController extends HttpServlet {
+public class BaseController extends HttpServlet {
 
-    protected abstract void processRequest(HttpServletRequest req, HttpServletResponse resp);
-
-    @Override
-    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (isUserAuthorized(req)) {
-            BaseController controller = getController(getAction(req));
-            controller.processRequest(req, resp);
-        }
+    protected enum COOKIE_TYPE {
+        LOGIN,
+        PASSWORD
     }
 
-    @Override
-    public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
-    }
-
-    ////////////////////
-    // Private methods
-    ////////////////////
-
-    private boolean isUserAuthorized(HttpServletRequest request) {
+    protected boolean isUserAuthorized(HttpServletRequest request) {
         UserEntity user = new UserEntity();
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals("z_c_uname")) {
-                user.setNick(cookie.getValue());
-            }
-            if (cookie.getName().equals("z_c_pwd")) {
-                user.setEncryptedPassword(cookie.getValue());
-            }
-        }
-        if (user.getNick() == null || user.getEncryptedPassword() == null) {
+        Map<COOKIE_TYPE, String> cookiesUserInfo = getUserInfoFromCookies(request.getCookies());
+        user.setNick(cookiesUserInfo.get(COOKIE_TYPE.LOGIN));
+        user.setEncryptedPassword(cookiesUserInfo.get(COOKIE_TYPE.PASSWORD));
+        if (user.getNick().isEmpty() || user.getEncryptedPassword().isEmpty()) {
             user.setNick(request.getParameter("login"));
             user.setPassword(request.getParameter("password"));
         }
@@ -57,19 +37,32 @@ public abstract class BaseController extends HttpServlet {
         }
     }
 
-    private String getAction(HttpServletRequest request) {
-        return (request.getParameter("action") == null) ? "" : request.getParameter("action");
+    protected long getRoomIdForUser(String nick) {
+        try {
+            return User.getRoomIdForUser(nick);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return -1L;
+        }
     }
 
-    private BaseController getController(String action) {
-        action = action.trim();
-        if (action.isEmpty()) {
-            return null;
+    protected Map<COOKIE_TYPE, String> getUserInfoFromCookies(Cookie... cookies) {
+        Map<COOKIE_TYPE, String> result = new HashMap<COOKIE_TYPE, String>();
+        result.put(COOKIE_TYPE.LOGIN, "");
+        result.put(COOKIE_TYPE.PASSWORD, "");
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("z_c_uname")) {
+                result.put(COOKIE_TYPE.LOGIN, cookie.getValue());
+            }
+            if (cookie.getName().equals("z_c_pwd")) {
+                result.put(COOKIE_TYPE.PASSWORD, cookie.getValue());
+            }
         }
-        if (action.equals("login")) {
-            return new LoginController();
-        }
-        // and so on ...
-        return null;
+        return result;
+    }
+
+    protected String getRootUrl(HttpServletRequest request) {
+        String[] urlParts = request.getRequestURL().toString().split("/");
+        return  urlParts[0] + "//" + urlParts[2] + "/" + urlParts[3];
     }
 }
