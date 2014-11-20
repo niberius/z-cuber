@@ -3,9 +3,13 @@ package org.zoltor.controller;
 import org.zoltor.model.User;
 import org.zoltor.model.entities.UserEntity;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,5 +68,25 @@ public class BaseController extends HttpServlet {
     protected String getRootUrl(HttpServletRequest request) {
         String[] urlParts = request.getRequestURL().toString().split("/");
         return  urlParts[0] + "//" + urlParts[2] + "/" + urlParts[3];
+    }
+
+    protected void smartRedirect(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        boolean isAuthorized = isUserAuthorized(request);
+        RequestDispatcher requestDispatcher;
+        String to;
+        if (isAuthorized) {
+            long roomId = getRoomIdForUser(getUserInfoFromCookies(request.getCookies()).get(COOKIE_TYPE.LOGIN));
+            if (roomId != -1) {
+                to = "/game.jsp?roomId=" + String.valueOf(roomId);
+            } else {
+                to = "/lobby.jsp";
+            }
+        } else {
+            to = "/login.jsp";
+        }
+        response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+        response.setHeader("Location", getRootUrl(request) + to);
+        requestDispatcher = request.getRequestDispatcher(to);
+        requestDispatcher.forward(request, response);
     }
 }

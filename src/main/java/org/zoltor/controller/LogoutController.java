@@ -1,23 +1,29 @@
 package org.zoltor.controller;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by p.ordenko on 20.11.2014, 11:30.
+ * Created by zoltor on 21.11.14.
  */
-public class IndexController extends BaseController {
+public class LogoutController extends BaseController {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        smartRedirect(req, resp);
+        super.doGet(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        Cookie userNameCookie = new Cookie("z_c_uname", "");
+        Cookie userPwdCookie = new Cookie("z_c_pwd", "");
+        userNameCookie.setMaxAge(0);
+        userPwdCookie.setMaxAge(0);
+        resp.addCookie(userNameCookie);
+        resp.addCookie(userPwdCookie);
+        smartRedirect(req, resp);
     }
 }
