@@ -21,7 +21,7 @@ public class LoginController extends BaseController {
         String uri = req.getRequestURI();
         if (isAuthorized) {
             if (req.getParameter("username") != null) {
-                UserEntity user = null;
+                UserEntity user;
                 try {
                     user = User.getUserInfo(req.getParameter("username"));
                     Cookie userNameCookie = new Cookie("z_c_uname", user.getNick());
